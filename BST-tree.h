@@ -6,6 +6,8 @@
 
 using namespace std;
 
+
+
 template <class Data,class Key> class BSTtree{
     class Node{
     public:
@@ -13,12 +15,13 @@ template <class Data,class Key> class BSTtree{
         Key k;
         Node *left;
         Node *right;
-        Node();
+        //Node();
         Node(Data x, Key y);
-        ~Node();
+        //~Node();
     };
     friend class Node;
 
+public:
     class Iterator{
     private:
         BSTtree *tree;
@@ -48,7 +51,9 @@ public://методы интерфейса
     void print();//вывод структуры дерева на экран
     int getOperations();//число просмотренных операций узлов дерева
 
-
+    BSTtree();//конструктор по умолчанию
+    BSTtree(BSTtree<Data,Key> &ttree);//конструктор копирования
+    ~BSTtree();//деструктор
 
 private:
     Node *root;//указатель на корень
@@ -59,9 +64,40 @@ private:
     //вспомогательные методы
     void show(Node *t,int level);
     void levelCounter(Node *t, int level,  int sum);
+    Node* tree_successor(Node *x);
+    Node* left_parent(Node *r, Node *x);
+    Node* tree_predecessor(Node *x);
+    Node* right_parent(Node *r, Node *x);
+    void copy(Node *t);
 };
 
 //--------------Методы класса BSTtree-----------
+template <class Data, class Key>
+BSTtree<Data,Key>::BSTtree() {
+    root=NULL;
+    length=0;
+}
+
+template <class Data, class Key>
+BSTtree<Data,Key>::BSTtree(BSTtree<Data, Key> &ttree) {
+    root==NULL;
+    length=0;
+    copy(ttree.root);
+}
+
+template <class Data, class Key>
+void BSTtree<Data,Key>::copy(BSTtree<Data, Key>::Node *t) {
+    if(t==NULL) return;
+    add(t->t,t->k);//добавляем узел в дерево
+    copy(t->left);//делаем то же самое для его сыновей
+    copy(t->right);
+}
+
+template <class Data, class Key>
+BSTtree<Data,Key>::~BSTtree() {
+    clear();
+}
+
 template <class Data, class Key>
 int BSTtree<Data,Key>::getSize() { return length;}
 
@@ -174,7 +210,7 @@ bool BSTtree<Data,Key>::remove(Key key) {
         t=t->right;
         while (t->left!=NULL){
             pred=t;
-            t->left;
+            t=t->left;
             operations++;
         }
         x=t->right;
@@ -267,21 +303,66 @@ template <class Data, class Key>
 void BSTtree<Data,Key>::show(Node *t, int level){
     if(t==NULL) return;
     show(t->right,level+1);
-    for(int i=0;i<=2*level;i++){
+    for(int i=0;i<=3*level;i++){
         cout << " ";
-        cout << t->k << endl;
     }
+    cout << t->k << endl;
     show(t->left,level+1);
 }
 
 template <class Data, class Key>
 int BSTtree<Data,Key>::getOperations() { return operations;}
 
+//вспомогательные методы
+template <class Data, class Key>
+typename BSTtree<Data,Key>::Node* BSTtree<Data,Key>::tree_successor(BSTtree<Data, Key>::Node *x) {
+    if(x==NULL) return NULL;
+    if(x->right!=NULL){
+        Node *tmp=x->right;
+        while (tmp->left!=NULL){
+            tmp=tmp->left;
+        }
+        return tmp;
+    } else return left_parent(root,x);
+}
+
+template <class Data, class Key>
+typename BSTtree<Data,Key>::Node* BSTtree<Data,Key>::left_parent(BSTtree<Data, Key>::Node *r, BSTtree<Data, Key>::Node *x) {
+    if(r==NULL) return NULL;
+    if(x->k<r->k){
+        Node *n=left_parent(r->left,x);
+        if(n!=NULL) return n;
+        else return r;
+    } else return left_parent(r->right,x);
+
+}
+
+template <class Data, class Key>
+typename BSTtree<Data,Key>::Node* BSTtree<Data,Key>::tree_predecessor(BSTtree<Data, Key>::Node *x) {
+    if(x==NULL) return NULL;
+    if(x->left!=NULL){
+        Node *tmp=x->left;
+        while (tmp->right!=NULL){
+            tmp=tmp->right;
+        }
+        return tmp;
+    } else return right_parent(root,x);
+}
+
+template <class Data, class Key>
+typename BSTtree<Data,Key>::Node* BSTtree<Data,Key>::right_parent(BSTtree<Data, Key>::Node *r, BSTtree<Data, Key>::Node *x) {
+    if(r==NULL) return NULL;
+    if(x->k>r->k){
+        Node *n=right_parent(r->right,x);
+        if(n!=NULL) return n;
+        else return r;
+    } else return right_parent(r->left,x);
+}
 
 //--------------Методы класса Iterator----------
 template <class Data, class Key>
 BSTtree<Data,Key>::Iterator::Iterator(BSTtree<Data, Key> &tree) {
-    this->tree=tree;
+    this->tree=&tree;
     cur=NULL;
 }
 
@@ -293,17 +374,21 @@ bool BSTtree<Data,Key>::Iterator::status() {
 template <class Data, class Key>
 bool BSTtree<Data,Key>::Iterator::first() {
     cur=tree->root;
-    if (cur != NULL)
+    if (cur != NULL){
         while (cur->left != NULL)
             cur = cur->left;
+    return true;
+    } else return false;
 }
 
 template <class Data, class Key>
 bool BSTtree<Data,Key>::Iterator::last() {
     cur = tree->root;
-    if (cur != NULL)
+    if (cur != NULL){
         while (cur->right != NULL)
             cur = cur->right;
+        return true;
+    } else return false;
 }
 
 template <class Data, class Key>
@@ -314,16 +399,27 @@ Data& BSTtree<Data,Key>::Iterator::operator*() {
 }
 
 template <class Data, class Key>
-bool BSTtree<Data,Key>::Iterator::operator++(int) {}
+bool BSTtree<Data,Key>::Iterator::operator++(int) {
+    if(status()){
+        cur=tree->tree_successor(cur);
+        return true;
+    } else return false;
+}
 
 template <class Data, class Key>
-bool BSTtree<Data,Key>::Iterator::operator--(int) {}
+bool BSTtree<Data,Key>::Iterator::operator--(int) {
+    if(status()){
+        cur=tree->tree_predecessor(cur);
+        return true;
+    } else return false;
+}
 //---------------Методы класса Node-------------
+/*
 template <class Data, class Key>
 BSTtree<Data,Key>::Node::Node() {
     left=NULL;
     right=NULL;
-}
+}*/
 
 template <class Data, class Key>
 BSTtree<Data,Key>::Node::Node(Data x, Key y) {
@@ -332,11 +428,11 @@ BSTtree<Data,Key>::Node::Node(Data x, Key y) {
     left=NULL;
     right=NULL;
 }
-
+/*
 template <class Data, class Key>
 BSTtree<Data,Key>::Node::~Node() {
     delete t;
     delete k;
     left=NULL;
     right=NULL;
-}
+}*/

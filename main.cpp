@@ -5,7 +5,7 @@
 
 using namespace std;
 
-long distIt(int min,int max){
+/*long distIt(int min,int max){
     return (min+(rand()<<16|rand())%max);
 }
 
@@ -53,6 +53,116 @@ void testComplexity(int number, int min, int max){
     cout<<"Theoretical: "<<(float)((log(number)/log(2)))<<" Practical: "<<(float)f/number<<" Errors: "<<err<<endl;
     cout<<"------------------------------"<<endl;
     cout<<"List size: "<< test.getSize()<<endl;
+}*/
+
+
+typedef unsigned long long INT_64;
+
+INT_64 lrand(){
+    return rand()<<16|rand();
+}
+
+void test_rand(int n){
+    BSTtree<INT_64, int > tree;
+
+    INT_64* m=new INT_64[n];
+
+    for(int i=0; i<n; i++) {
+        m[i]=lrand();
+        tree.add(1, m[i]);
+    }
+
+
+    double I=0;
+    double D=0;
+    double S=0;
+
+    for(int i=0;i<n/2;i++) {
+        if (i % 10 == 0) {
+            tree.remove(lrand());
+            D += tree.getOperations();
+            tree.add(1, m[rand() % n]);
+            I += tree.getOperations();
+            try {
+                tree.read(lrand());
+                S += tree.getOperations();
+            } catch (int code) { S += tree.getOperations(); }
+        } else {
+            int ind = rand() % n;
+            tree.remove(m[ind]);
+            D += tree.getOperations();
+            INT_64 key = lrand();
+            tree.add(1, key);
+            I += tree.getOperations();
+            m[ind] = key;
+            try {
+                tree.read(m[rand() % n]);
+                S += tree.getOperations();
+            } catch (int code) { S += tree.getOperations(); }
+
+        }
+
+    }
+            cout<<"items count:"<<tree.getSize()<<endl;
+            cout<<"1.39*log2(n)="<<1.39*(log(n)/log(2))<<endl;
+            cout<<"Count insert: " << I/(n/2) <<endl;
+            cout<<"Count delete: " << D/(n/2) <<endl;
+            cout<<"Count search: " << S/(n/2) <<endl;
+            delete[] m;
+
+}
+
+void test_sort(int n){
+    BSTtree<INT_64,int > tree;
+
+    INT_64* m=new INT_64[n];
+
+    for(int i=0;i<n;i++){
+        m[i]=i*1000;
+        tree.add(1, m[i]);
+    }
+
+    cout<<"items count:"<<tree.getSize()<<endl;
+    double I=0;
+    double D=0;
+    double S=0;
+
+    for(int i=0;i<n/2;i++) {
+        if (i % 10 == 0) {
+            int k = lrand() % (1000 * n);
+            k = k + !(k % 2);
+            tree.remove(k);
+            D += tree.getOperations();
+            tree.add(1, m[rand() % n]);
+            I += tree.getOperations();
+            k = lrand() % (1000 * n);
+            k = k + !(k % 2);
+            try {
+                tree.read(k);
+                S += tree.getOperations();
+            } catch (int code) { S += tree.getOperations(); }
+        } else {
+            int ind = rand() % n;
+            tree.remove(m[ind]);
+            D += tree.getOperations();
+            int k = lrand() % (1000 * n);
+            k = k + k % 2;
+            tree.add(1, k);
+            I += tree.getOperations();
+            m[ind] = k;
+            try {
+                tree.read(m[rand() % n]);
+                S += tree.getOperations();
+            } catch (int code) { S += tree.getOperations(); }
+
+        }
+    }
+        cout<<"items count:"<<tree.getSize()<<endl;
+        cout<<"n/2="<<n/2<<endl;
+        cout<<"Count insert: " << I/(n/2) <<endl;
+        cout<<"Count delete: " << D/(n/2) <<endl;
+        cout<<"Count search: " << S/(n/2) <<endl;
+        delete[] m;
 }
 
 void showMenu(){
@@ -81,6 +191,8 @@ void showMenu(){
 int main() {
     BSTtree<int,int> tree;
     BSTtree<int ,int >::Iterator iter(tree);
+
+    srand((unsigned int)time(NULL));
 
     showMenu();
 
@@ -201,17 +313,15 @@ int main() {
                 }
 
                 case 17:{
-                    int number, min, max;
+                    int number;
                     cout<<"Input tree length: ";
                     cin>>number;
                     cout<<endl;
-                    cout<<"Input minimum value: ";
-                    cin>>min;
-                    cout<<endl;
-                    cout<<"Input maximum value: ";
-                    cin>>max;
-                    cout<<endl;
-                    testComplexity(number,min,max);
+                    cout<<"Random tree: "<<endl;
+                    test_rand(number);
+                    cout<<"--------------------------------------------"<<endl;
+                    cout<<"Sorted tree: "<<endl;
+                    test_sort(number);
                     break;
                 }
 

@@ -63,7 +63,7 @@ private:
 
     //вспомогательные методы
     void show(Node *t,int level);
-    void levelCounter(Node *t, int level,  int sum);
+    void levelCounter(Node *t, int level,  int &sum);
     Node* tree_successor(Node *x);
     Node* left_parent(Node *r, Node *x);
     Node* tree_predecessor(Node *x);
@@ -286,11 +286,11 @@ int BSTtree<Data,Key>::ex_path_l() {
 }
 
 template <class Data, class Key>
-void BSTtree<Data,Key>::levelCounter(BSTtree<Data, Key>::Node *t, int level, int sum) {
+void BSTtree<Data,Key>::levelCounter(BSTtree<Data, Key>::Node *t, int level, int &sum) {
     if(t==NULL) return;
     levelCounter(t->left,level+1,sum);
-    levelCounter(t->right,level,sum);
-    if(t->left==NULL||t->right==NULL) sum+=level;
+    levelCounter(t->right,level+1,sum);
+    if(t->left==NULL||t->right==NULL) sum += level;
 }
 
 template <class Data, class Key>

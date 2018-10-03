@@ -5,56 +5,6 @@
 
 using namespace std;
 
-/*long distIt(int min,int max){
-    return (min+(rand()<<16|rand())%max);
-}
-
-long distKey(){
-    return ((rand()<<16|rand()));
-}
-
-void testComplexity(int number, int min, int max){
-    BSTtree<int, int > test;
-    test.clear();
-    srand((unsigned int)time(NULL));
-
-    int err=0;
-    for(int i=0;i<number;i++){
-        test.add(distIt(min,max),distIt(min,max));
-    }
-    cout<<"tree created"<<endl;
-
-    long long d=0, ins=0, f=0;
-    for(int i=0;i<number;i++){
-        try{
-            test.remove(distIt(min,max));
-            d+=test.getOperations();
-
-            test.add(distIt(min,max), distIt(min,max));
-            ins+=test.getOperations();
-
-            test.read(distIt(min,max));
-            f+=test.getOperations();
-        }catch (int code){
-            if(code==KEY_DOES_NOT_EXIST) {
-                err++;
-                f+=test.getOperations();
-            }
-        }
-    }
-
-
-    cout<<"Time complexity"<<endl;
-    cout<<"Delete: "<<endl;
-    cout<<"Theoretical: "<<(float)((log(number)/log(2)))<<" Practical: "<<(float)d/number<<endl;
-    cout<<"Insert: "<<endl;
-    cout<<"Theoretical: "<<(float)((log(number)/log(2)))<<" Practical: "<<(float)ins/number<<endl;
-    cout<<"Find: "<<endl;
-    cout<<"Theoretical: "<<(float)((log(number)/log(2)))<<" Practical: "<<(float)f/number<<" Errors: "<<err<<endl;
-    cout<<"------------------------------"<<endl;
-    cout<<"List size: "<< test.getSize()<<endl;
-}*/
-
 
 typedef unsigned long long INT_64;
 

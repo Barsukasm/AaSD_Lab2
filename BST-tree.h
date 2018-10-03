@@ -45,7 +45,7 @@ public://методы интерфейса
     Data& read(Key key);//доступ к данным по ключу
     bool add(Data data, Key key);//включение данных с заданным ключом
     bool remove(Key key);//удаление данных с заданным ключом
-    bool Lt_t_Rt();//обход узлов дерева по схеме Lt->t->Rt
+    void Lt_t_Rt();//обход узлов дерева по схеме Lt->t->Rt
     int ex_path_l();//определение длины внешнего пути дерева (рекурсивная форма алгоритма)
 
     void print();//вывод структуры дерева на экран
@@ -62,7 +62,7 @@ private:
     int operations;//число просмотров
 
     //вспомогательные методы
-    void show(Node *t,int level);
+    void show(Node *t,int level);//вспомогательный метод распечатки
     void levelCounter(Node *t, int level,  int &sum);
     Node* tree_successor(Node *x);
     Node* left_parent(Node *r, Node *x);
@@ -180,6 +180,7 @@ bool BSTtree<Data,Key>::add(Data data, Key key) {
     } else{
         pred->right=new Node(data,key);
     }
+    operations++;
     length++;
     return true;
 }
@@ -243,7 +244,7 @@ bool BSTtree<Data,Key>::remove(Key key) {
 }
 
 template <class Data, class Key>
-bool BSTtree<Data,Key>::Lt_t_Rt() {
+void BSTtree<Data,Key>::Lt_t_Rt() {
     if(root!=NULL){
         std::list<Node*> s1, s2, s3;
         Node *cur;
@@ -271,9 +272,6 @@ bool BSTtree<Data,Key>::Lt_t_Rt() {
             cout<<cur->k<<"->";
         }
         cout<<endl;
-        return true;
-    } else{
-        return false;
     }
 }
 
